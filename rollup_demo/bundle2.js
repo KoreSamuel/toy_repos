@@ -4,7 +4,7 @@ var foo = 'hello world';
 
 var version = "1.0.0";
 
-function main() {
+function main () {
   console.log(`version:  ${version}`);
   console.log(foo);
 }

@@ -2,7 +2,10 @@
 
 var foo = 'hello world';
 
-function main() {
+// import { version } from '../package.json';
+
+function main () {
+  // console.log(`version:  ${version}`);
   console.log(foo);
 }
 
