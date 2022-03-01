@@ -1,0 +1,23 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "My test package",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "test.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/my-org/repo.git"
+  },
+  "keywords": [
+    "foo",
+    "bar"
+  ],
+  "author": "Anton Medvedev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/my-org/repo/issues"
+  },
+  "homepage": "https://github.com/my-org/repo#readme"
+}
