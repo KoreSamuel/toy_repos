@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creating a scene</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <script src="./lib/three.js"></script> -->
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+        const scene = new THREE.Scene();
+
+        // 创建相机
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const k = width / height;
+        const s = 200; // 三维场景显示范围控制系数，系数越大，显示范围越大
+
+        // 正射投影相机
+        const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+
+        // 投射投影相机
+        //   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        camera.position.set(200, 300, 200); // 相机位置
+        camera.lookAt(scene.position); // 设置相机方向(指向场景)
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xb9d3ff, 1);
+        document.body.appendChild(renderer.domElement);
+
+        const axisHelpter = new THREE.AxesHelper(250);
+        scene.add(axisHelpter);
+
+        // Buffer类型几何体对象
+        const geometry = new THREE.BufferGeometry();
+        // 类型数组创建顶点数据
+        const vertices = new Float32Array([
+            0, 0, 0,
+            50, 0, 0,
+            0, 100, 0,
+            0, 0, 10,
+            0, 0, 100,
+            50, 0, 10
+        ]);
+        //创建属性缓冲区对象
+        const attribute = new THREE.BufferAttribute(vertices, 3); // 三个为一组，表示一个定点的三个坐标
+        // 设置几何体attributes属性的位置属性
+        geometry.attributes.position = attribute;
+
+
+        // 创建网格渲染模式(网格)
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffff00,
+            side: THREE.DoubleSide
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        // scene.add(mesh); 
+
+        // 创建点渲染模式(点)
+        const material1 = new THREE.PointsMaterial({
+            color: 0xff0000,
+            size: 10
+        });
+        const points = new THREE.Points(geometry, material1);
+        // scene.add(points);
+
+        // 创建线渲染模式(线)
+        const material2 = new THREE.LineBasicMaterial({
+            color: 0x0000ff,
+            linewidth: 5
+        });
+        const line = new THREE.Line(geometry, material2);
+        scene.add(line);
+        renderer.render(scene, camera);
+
+    </script>
+</body>
+
+</html>
