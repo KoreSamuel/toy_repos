@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creating a scene</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <script src="./lib/three.js"></script> -->
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+        // 创建场景
+        const scene = new THREE.Scene();
+
+        // 创建网格模型
+        const geometry = new THREE.BoxGeometry(100, 100, 100); // 立方几何对象
+        //    漫反射
+        const material = new THREE.MeshLambertMaterial({ color: 0x0000ff, opacity: 0.7, transparent: true }); // 材质对象
+        const mesh = new THREE.Mesh(geometry, material); // 网格模型对象
+        scene.add(mesh);
+
+        const geometry1 = new THREE.SphereGeometry(50, 320, 320); // 球体几何对象
+        //    镜面反射
+        const material1 = new THREE.MeshPhongMaterial({ color: 0x00ff00, specular: 0x4488ee, shininess: 12 }); // 材质对象
+        const mesh1 = new THREE.Mesh(geometry1, material1); // 网格模型对象
+        mesh1.translateY(120);
+        scene.add(mesh1);
+
+        const axisHelpter = new THREE.AxesHelper(250);
+        scene.add(axisHelpter);
+
+        //   点光源
+        const point = new THREE.PointLight(0xffffff);
+        point.position.set(100, 100, 100);
+        scene.add(point);
+
+        //   环境光
+        const ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+
+        // 创建相机
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const k = width / height;
+        const s = 200; // 三维场景显示范围控制系数，系数越大，显示范围越大
+
+        // 正射投影相机
+        const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+
+        // 投射投影相机
+        //   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        camera.position.set(200, 300, 200); // 相机位置
+        camera.lookAt(scene.position); // 设置相机方向(指向场景)
+
+        // 创建渲染器
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(width, height);
+        renderer.setClearColor(0xb9d3ff, 1); // 背景颜色
+        document.body.appendChild(renderer.domElement);
+
+        // 渲染场景
+        //   renderer.render(scene, camera);
+
+        // 动画
+        // function render() {
+        //   renderer.render(scene, camera);
+        //   mesh.rotateY(0.01);
+        //   requestAnimationFrame(render);
+        // }
+
+        // 匀速旋转
+        let T0 = Date.now();
+        function render() {
+            let T1 = Date.now();
+            let t = T1 - T0;
+            T0 = T1;
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+            mesh.rotateY(0.001 * t);
+        }
+
+        render()
+
+    </script>
+</body>
+
+</html>
