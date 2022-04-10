@@ -80,7 +80,15 @@
             linewidth: 5
         });
         const line = new THREE.Line(geometry, material2);
-        scene.add(line);
+        // scene.add(line);
+
+        const geometry_2 = new THREE.SphereGeometry(100, 25, 25);
+        const material_2 = new THREE.LineBasicMaterial({
+            color: 0x0000ff,
+            linewidth: 5
+        });
+        const line_2 = new THREE.Line(geometry_2, material_2);
+        scene.add(line_2);
         renderer.render(scene, camera);
 
     </script>
