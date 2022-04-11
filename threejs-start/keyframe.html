@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyframe</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(200, 300, 200);
+    camera.lookAt(scene.position);
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xb9d3ff, 1);
+    document.body.appendChild(renderer.domElement);
+
+    const group = new THREE.Group();
+
+    const materail = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+    });
+    const boxGeometry = new THREE.BoxGeometry(50, 10, 10);
+    const sphereGeometry = new THREE.SphereGeometry(25, 32, 32);
+    const box = new THREE.Mesh(boxGeometry, materail);
+    const sphere = new THREE.Mesh(sphereGeometry, materail);
+    box.name = 'Box';
+    sphere.name = 'Sphere';
+    group.add(box);
+    group.add(sphere);
+    scene.add(group);
+
+    const axisHelper = new THREE.AxesHelper(250);
+    scene.add(axisHelper)
+
+    const times = [0, 10]; // 关键帧时间数组，离散的时间点序列
+    const values = [0, 0, 0, 150, 0, 0]; // 与时间点对应的值组成的数组
+    // 创建位置关键帧对象：0时刻对应位置0,0,0 10时刻对应位置150,0,0
+    const posTrack = new THREE.KeyframeTrack('Box.position', times, values);
+    // 创建颜色关键帧对象：10时刻对应颜色1,0,0 10时刻对应颜色0,0,1
+    const colorKF = new THREE.KeyframeTrack('Box.material.color', [10, 20], [1, 0, 0, 0, 0, 1]);
+    // 创建名为Sphere对象的关键帧数据 从0~20时间段，尺寸scale缩放3倍
+    const scaleTrack = new THREE.KeyframeTrack('Sphere.scale', [0, 20], [1, 1, 1, 3, 3, 3]);
+    // duration决定了默认的播放时间 一般取所有帧动画的最大时间
+    // duration偏小 帧动画数据无法播放完成 偏大 播放完帧动画还会继续空播放
+    const duration = 20;
+    // 多个帧动画作为元素创建一个剪辑clip对象，命名"default"，持续时间20
+    const clip = new THREE.AnimationClip('default', duration, [posTrack, colorKF, scaleTrack]);
+
+    // 创建一个动画播放器，播放剪辑clip
+    const mixer = new THREE.AnimationMixer(group);
+    // 剪辑clip作为参数，通过混合器clipAction方法返回一个操作对象AnimationAction
+    const action = mixer.clipAction(clip);
+    // 通过操作action设置播放方式
+    action.timeScale = 10; // 播放速度，1为正常速度
+    action.play();
+
+    const clock = new THREE.Clock();
+    function render() {
+      const delta = clock.getDelta();
+      mixer.update(delta);
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+
+    render();
+
+  </script>
+</body>
+
+</html>
