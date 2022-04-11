@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xb9d3ff, 1);
+        document.body.appendChild(renderer.domElement);
+
+        // 头部网格模型和组
+        const headMesh = sphereMesh(10, 0, 0, 0);
+        headMesh.name = "脑壳"
+        const leftEyeMesh = sphereMesh(1, 8, 5, 4);
+        leftEyeMesh.name = "左眼"
+        const rightEyeMesh = sphereMesh(1, 8, 5, -4);
+        rightEyeMesh.name = "右眼"
+        const headGroup = new THREE.Group();
+        headGroup.name = "头部"
+        headGroup.add(headMesh, leftEyeMesh, rightEyeMesh);
+        // 身体网格模型和组
+        const neckMesh = cylinderMesh(3, 10, 0, -15, 0);
+        neckMesh.name = "脖子"
+        const bodyMesh = cylinderMesh(14, 30, 0, -35, 0);
+        bodyMesh.name = "腹部"
+        const leftLegMesh = cylinderMesh(4, 60, 0, -80, -7);
+        leftLegMesh.name = "左腿"
+        const rightLegMesh = cylinderMesh(4, 60, 0, -80, 7);
+        rightLegMesh.name = "右腿"
+        const legGroup = new THREE.Group();
+        legGroup.name = "腿"
+        legGroup.add(leftLegMesh, rightLegMesh);
+        const bodyGroup = new THREE.Group();
+        bodyGroup.name = "身体"
+        bodyGroup.add(neckMesh, bodyMesh, legGroup);
+        // 人Group
+        const personGroup = new THREE.Group();
+        personGroup.name = "人"
+        personGroup.add(headGroup, bodyGroup)
+        personGroup.translateY(50)
+        scene.add(personGroup);
+
+        // 球体网格模型创建函数
+        function sphereMesh(R, x, y, z) {
+            const geometry = new THREE.SphereGeometry(R, 25, 25); //球体几何体
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x0000ff
+            }); //材质对象Material
+            const mesh = new THREE.Mesh(geometry, material); // 创建网格模型对象
+            mesh.position.set(x, y, z);
+            return mesh;
+        }
+        // 圆柱体网格模型创建函数
+        function cylinderMesh(R, h, x, y, z) {
+            const geometry = new THREE.CylinderGeometry(R, R, h, 25, 25); //球体几何体
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x0000ff
+            }); //材质对象Material
+            const mesh = new THREE.Mesh(geometry, material); // 创建网格模型对象
+            mesh.position.set(x, y, z);
+            return mesh;
+        }
+        scene.traverse(function (obj) {
+            if (obj.type === "Group") {
+                console.log(obj.name);
+            }
+            if (obj.type === "Mesh") {
+                console.log('  ' + obj.name);
+                obj.material.color.set(0xffff00);
+            }
+            if (obj.name === "左眼" | obj.name === "右眼") {
+                obj.material.color.set(0x000000)
+            }
+            // 打印id属性
+            console.log(obj.id);
+            // 打印该对象的父对象
+            console.log(obj.parent);
+            // 打印该对象的子对象
+            console.log(obj.children);
+        })
+
+
+    </script>
+</body>
+
+</html>
