@@ -46,7 +46,7 @@
     const axisHelper = new THREE.AxesHelper(250);
     scene.add(axisHelper)
 
-    const times = [0, 10]; // 关键帧时间数组，离散的时间点序列
+    const times = [0, 20]; // 关键帧时间数组，离散的时间点序列
     const values = [0, 0, 0, 150, 0, 0]; // 与时间点对应的值组成的数组
     // 创建位置关键帧对象：0时刻对应位置0,0,0 10时刻对应位置150,0,0
     const posTrack = new THREE.KeyframeTrack('Box.position', times, values);

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morph Targets</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.135.0';
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(200, 300, 200);
+    camera.lookAt(scene.position);
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xb9d3ff, 1);
+    document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.BoxGeometry(50, 50, 50);
+
+    const box1 = new THREE.BoxGeometry(100, 5, 100);
+    const box2 = new THREE.BoxGeometry(5, 200, 5);
+
+    geometry.morphTargets = [];
+    geometry.morphTargets[0] = {
+      name: 'box1',
+      vertices: box1.vertices,
+    };
+    geometry.morphTargets[1] = {
+      name: 'box2',
+      vertices: box2.vertices,
+    };
+
+    const material = new THREE.MeshLambertMaterial({
+      morphTargets: true,
+      color: 0x0000ff
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.morphTargetInfluences = [];
+    mesh.morphTargetInfluences[0] = 0.5;
+    mesh.morphTargetInfluences[1] = 1;
+    scene.add(mesh)
+
+
+    renderer.render(scene, camera);
+  </script>
+</body>
+
+</html>
