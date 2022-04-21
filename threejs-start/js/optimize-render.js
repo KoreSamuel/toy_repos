@@ -166,6 +166,8 @@ const main = () => {
     const lonFudege = Math.PI * .5;
     const latFudege = Math.PI * -0.135;
     const geometries = [];
+    const color = new THREE.Color();
+
     data.forEach((row, latNdx) => {
       row.forEach((value, lonNdx) => {
         if (value === undefined) {
@@ -187,11 +189,30 @@ const main = () => {
         originHelper.updateWorldMatrix(true, false);
         geometry.applyMatrix4(originHelper.matrixWorld);
 
+        const hue = THREE.MathUtils.lerp(0.7, 0.3, amount);
+        const saturation = 1;
+        const lightness = THREE.MathUtils.lerp(0.4, 1.0, amount);
+        color.setHSL(hue, saturation, lightness);
+
+        const rbg = color.toArray().map(v => v * 255);
+
+        const numVerts = geometry.getAttribute('position').count;
+        const itemSize = 3;
+        const colors = new Uint8Array(numVerts * itemSize);
+
+        colors.forEach((v, ndx) => {
+          colors[ndx] = rbg[ndx % itemSize];
+        });
+
+        const normalized = true;
+        const colorAttrib = new THREE.BufferAttribute(colors, itemSize, normalized);
+        geometry.setAttribute('color', colorAttrib);
+
         geometries.push(geometry);
       });
     });
     const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
-    const material = new THREE.MeshBasicMaterial({ color: 'red' });
+    const material = new THREE.MeshBasicMaterial({ vertexColors: true });
     const mesh = new THREE.Mesh(mergedGeometry, material);
     scene.add(mesh);
   }
