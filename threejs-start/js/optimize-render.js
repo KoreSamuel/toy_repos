@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
+import * as BufferGeometryUtils from 'BufferGeometryUtils';
 
 // fetch data
 const request = async (url) => {
@@ -144,6 +145,57 @@ const main = () => {
     })
   }
 
+  const addBoxexOptimized = (file) => {
+    const { min, max, data } = file;
+    const range = max - min;
+
+    const lonHelper = new THREE.Object3D();
+    scene.add(lonHelper);
+
+    const latHelper = new THREE.Object3D();
+    lonHelper.add(latHelper);
+
+    const positionHelper = new THREE.Object3D();
+    positionHelper.position.z = 1;
+    latHelper.add(positionHelper);
+
+    const originHelper = new THREE.Object3D();
+    originHelper.position.z = 0.5;
+    positionHelper.add(originHelper);
+
+    const lonFudege = Math.PI * .5;
+    const latFudege = Math.PI * -0.135;
+    const geometries = [];
+    data.forEach((row, latNdx) => {
+      row.forEach((value, lonNdx) => {
+        if (value === undefined) {
+          return;
+        }
+        const amount = (value - min) / range;
+
+        const boxWidth = 1;
+        const boxHeight = 1;
+        const boxDepth = 1;
+        const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+        lonHelper.rotation.y = THREE.MathUtils.degToRad(lonNdx + file.xllcorner) + lonFudege;
+        latHelper.rotation.x = THREE.MathUtils.degToRad(latNdx + file.yllcorner) + latFudege;
+
+        positionHelper.updateWorldMatrix(true, false);
+
+        positionHelper.scale.set(0.005, 0.005, THREE.MathUtils.lerp(0.01, 0.5, amount));
+        originHelper.updateWorldMatrix(true, false);
+        geometry.applyMatrix4(originHelper.matrixWorld);
+
+        geometries.push(geometry);
+      });
+    });
+    const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
+    const material = new THREE.MeshBasicMaterial({ color: 'red' });
+    const mesh = new THREE.Mesh(mergedGeometry, material);
+    scene.add(mesh);
+  }
+
   const requestRenderIfNotRequested = () => {
     if (!renderRequested) {
       renderRequested = true;
@@ -158,7 +210,7 @@ const main = () => {
   render();
   request('resources/gpw_v4_basic_demographic_characteristics_rev10_a000_014mt_2010_cntm_1_deg.asc')
     .then(parseData)
-    .then(addBoxes)
+    .then(addBoxexOptimized)
     .then(render)
 
   controls.addEventListener('change', requestRenderIfNotRequested);
