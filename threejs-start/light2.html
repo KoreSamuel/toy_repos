@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.138.0/build/three.module.js",
+        "OrbitControls": "https://unpkg.com/three@0.138.0/examples/jsm/controls/OrbitControls.js"
+      }
+    }
+  </script>
+</head>
+
+<body>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'OrbitControls';
+    const main = () => {
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 10, 20);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // 围绕某个点旋转控制相机
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(0, 5, 0); // 观察点位置
+      controls.update(); // 更新观察点位置
+
+      const planeSize = 40;
+
+      // 加载纹理
+      const loader = new THREE.TextureLoader();
+      const texture = loader.load('checker.png');
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.magFilter = THREE.NearestFilter;
+      const repeats = planeSize * -.5;
+      texture.repeat.set(repeats, repeats);
+
+      // 创建平面
+      const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize);
+      const planeMaterial = new THREE.MeshPhongMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+      });
+      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      plane.rotation.x = Math.PI / 2;
+      scene.add(plane);
+
+      // 创建球体
+      const sphereGeometry = new THREE.SphereGeometry(3, 32, 16);
+      const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0xCCAA88 });
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.position.set(-4, 5, 0);
+      scene.add(sphere);
+
+      // 创建立方体
+      const cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+      const cubeMaterial = new THREE.MeshPhongMaterial({ color: 0x88AACC });
+      const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cube.position.set(5, 3, 0);
+      scene.add(cube);
+
+      // 环境光
+      // const light = new THREE.AmbientLight(0xffffff, 1);
+      // scene.add(light);
+
+      // 半球光, 从上到下，从skyColor到groundColor渐变的光
+      // const skyColor = 0xB1E1FF;
+      // const groundColor = 0xB97A20;
+      // const hemisLight = new THREE.HemisphereLight(skyColor, groundColor, 1);
+      // scene.add(hemisLight);
+
+      //平行光
+      // const lightDirection = new THREE.DirectionalLight(0xffffff, 1);
+      // lightDirection.position.set(0, 10, 0);
+      // lightDirection.target.position.set(-5, 0, 0);
+      // scene.add(lightDirection);
+      // scene.add(lightDirection.target);
+      // // 光源辅助对象，绘制的方形平面代表方向光的位置，一条连接光源于目标点的直线，代表光的方向
+      // const lightDirectionHelper = new THREE.DirectionalLightHelper(lightDirection);
+      // scene.add(lightDirectionHelper)
+      // lightDirection.target.updateMatrixWorld();
+      // lightDirectionHelper.update();
+
+      // 点光源
+      const lightPoint = new THREE.PointLight(0xffffff, 1);
+      lightPoint.position.set(-2, 10, 3);
+      scene.add(lightPoint);
+      // 光源辅助对象，绘制的点代表点光源的位置
+      const lightPointHelper = new THREE.PointLightHelper(lightPoint);
+      scene.add(lightPointHelper);
+
+      // 聚光灯
+      // const lightSpot = new THREE.SpotLight(0xffffff, 1);
+      // lightSpot.position.set(0, 20, 3);
+      // lightSpot.angle = Math.PI / 4;
+      // lightSpot.power = 3;
+      // lightSpot.decay = 2;
+      // lightSpot.distance = 100;
+      // scene.add(lightSpot);
+      // // 光源辅助对象，绘制的点代表光源的位置
+      // const lightSpotHelper = new THREE.SpotLightHelper(lightSpot);
+      // scene.add(lightSpotHelper);
+
+
+      // 坐标轴
+      const axes = new THREE.AxesHelper(20);
+      scene.add(axes);
+
+      function render() {
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+
+    }
+    main()
+  </script>
+</body>
+
+</html>
